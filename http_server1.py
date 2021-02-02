@@ -1,9 +1,11 @@
 import socket
 import sys
 
+
 def parse(data):
     data = data.decode()
-    return data.split()[1]
+    return (data.split()[0], data.split()[1])
+
 
 port = int(sys.argv[1])
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,12 +18,13 @@ while True:
     print('waiting for a connection')
     connection, client_address = sock.accept()
     try:
-        #print('client connected:', client_address)
         # Receive the data in small chunks and retransmit it
         data = connection.recv(2083)
         if data:
-            #print('sending data back to the client')
-            path = parse(data)[1:]
+            method, path = parse(data)
+            path = path[1:]
+            if method != 'GET':
+                break
             if path[:7] == 'rfc2616' and path[-4:] != '.htm' and path[-5:] != '.html':
                 connection.sendall(b'HTTP/1.0 403 Forbidden\r\n\r\n')
             else:
