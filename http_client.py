@@ -47,7 +47,8 @@ def request(host,  path, port ):
     else:
         return response[0], 'Encrypted(HTTPS) or No HTML'
 
-orig = str(sys.argv[1])
+#orig = str(sys.argv[1])
+orig = 'http://insecure.stevetarzia.com/redirect-hell'
 host, path, port = parser(orig)
 headers, html = request(host, path, port)
 
@@ -63,6 +64,19 @@ while count < 10 and 'HTTP/1.1 302' in headers or 'HTTP/1.1 301' in headers or  
     headers, html = request(host, path, port)
     count = count + 1
 
+
+if count == 10:
+    #sys.stderr('300')
+    print("300 ERROR", file=sys.stderr)
+    sys.exit([3])
+
+if '404 Not Found' in headers or  '403 Forbidden' in headers:
+    print(html)
+    print("400 ERROR", file=sys.stderr)
+    sys.exit([4])
+
 if '200 OK' in headers:
-    print(0)
+    print(html)
+    sys.exit([0])
+
 
