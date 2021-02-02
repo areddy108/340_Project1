@@ -9,9 +9,7 @@ def parser(link):
 
     split = link.find('/')
     c = link.find(':')
-    print(link)
     if c > 0:
-        print(c)
         host = link[:c]
         port = int(link[c + 1:split])
         path = link[split:]
@@ -28,9 +26,9 @@ def parser(link):
 def request(host,  path, port ):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     request = "GET %s HTTP/1.0\r\nHost: %s\r\n\r\n" % (path, host)
-    print(request)
     s.connect((host, port))
     s.sendall(request.encode())
+
     response = s.recv(512)
     test = response
 
@@ -49,13 +47,11 @@ def request(host,  path, port ):
     else:
         return response[0], 'Encrypted(HTTPS) or No HTML'
 
-
-orig = 'http://insecure.stevetarzia.com/redirect-hell'
+orig = str(sys.argv[1])
 host, path, port = parser(orig)
 headers, html = request(host, path, port)
 
 count = 0
-
 while count < 10 and 'HTTP/1.1 302' in headers or 'HTTP/1.1 301' in headers or  'HTTP/1.0 301'in headers or 'HTTP/1.0 302' in headers:
     start = headers.find('Location')
     end = headers[start:].find('\r')
@@ -65,10 +61,8 @@ while count < 10 and 'HTTP/1.1 302' in headers or 'HTTP/1.1 301' in headers or  
         redirect = headers[start+10:start+end]
     host, path, port = parser(redirect)
     headers, html = request(host, path, port)
-
     count = count + 1
-    print(count)
 
-if '200 OK' in html:
+if '200 OK' in headers:
     print(0)
 
