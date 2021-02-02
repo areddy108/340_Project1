@@ -18,11 +18,11 @@ while True:
     try:
         #print('client connected:', client_address)
         # Receive the data in small chunks and retransmit it
-        data = connection.recv(32)
+        data = connection.recv(2083)
         if data:
             #print('sending data back to the client')
             path = parse(data)[1:]
-            if path[:7] == 'rfc2616' and path[-4:] != 'htm' and path[-5:] != 'html':
+            if path[:7] == 'rfc2616' and path[-4:] != '.htm' and path[-5:] != '.html':
                 connection.sendall(b'HTTP/1.0 403 Forbidden\r\n\r\n')
             else:
                 f = open(path)
