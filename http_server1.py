@@ -5,8 +5,7 @@ def parse(data):
     data = data.decode()
     return data.split()[1]
 
-# port = int(sys.argv[1])
-port = 10000
+port = int(sys.argv[1])
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind(("", port))
 print('starting up on port', port)
@@ -23,7 +22,7 @@ while True:
         if data:
             #print('sending data back to the client')
             path = parse(data)[1:]
-            if path[:7] == 'rfc2616' and path[-4:-1] != 'htm':
+            if path[:7] == 'rfc2616' and path[-4:] != 'htm' and path[-5:] != 'html':
                 connection.sendall(b'HTTP/1.0 403 Forbidden\r\n\r\n')
             else:
                 f = open(path)
